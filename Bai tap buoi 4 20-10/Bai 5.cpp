@@ -3,8 +3,11 @@
 #include <stdio.h>
 int main(){
 	int n, i, S=0;
-	printf("Nhap vao so nguyen n: ");
+	printf("Nhap vao so n>0: ");
 	scanf("%d", &n);
+	if(n<=0){
+		printf("Nhap vao so n>0");
+	}
 	
 	for (i=1; i<=n/2; i++){
 		if(n%i==0){
