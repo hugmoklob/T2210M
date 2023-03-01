@@ -1,0 +1,64 @@
+--2. Create tables with constraints as design above--
+create table Customer(
+CustomerId int primary key, 
+Name nvarchar(50),
+City nvarchar(50),
+Country nvarchar(50),
+Phone nvarchar(15),
+Email nvarchar(50)
+);
+
+create table CustomerAccount(
+AccountNumber char(9) primary key,
+CustomerId int foreign key references Customer(CustomerId) not null,
+Balance money not null,
+MinAccount money
+);
+
+create table CustomerTransaction(
+TransactionId int primary key,
+AccountNumber char(9) foreign key references CustomerAccount(AccountNumber),
+TransactionDate smalldatetime,
+Amount money,
+DepositorWithdraw bit,
+);
+
+--3. Insert into each table at least 3 records--
+insert into Customer( CustomerId, Name, City, Country, Phone, Email)
+values
+(1, 'Nguyen Van Minh', 'Hanoi', 'Viet Nam', '0123456789', 'vm123@gmail.com'),
+(2, 'Nguyen Thi An', 'Nghe An', 'Viet Nam', '0123456788', 'ta123@gmail.com'),
+(3, 'Andy Cole', 'Berlin', 'Germany', '0123456787', 'ac123@gmail.com');
+
+insert into CustomerAccount( AccountNumber, CustomerId, Balance, MinAccount)
+values
+('000000010', 1, 1000000, 100),
+('000000011', 2, 2000000, 100),
+('000000012', 3, 3000000, 200);
+
+insert into CustomerTransaction( TransactionId, AccountNumber, TransactionDate, Amount, DepositorWithdraw)
+values
+(1,'000000010','2022-9-12', 500000, 1),
+(2,'000000011', '2021-5-14', 700000, 0),
+(3,'000000012', '2022-8-24', 1200000, 1);
+
+--4. Write a query to get all customers from Customer table who live in ‘Hanoi’--
+select * from Customer where City = 'Hanoi';
+
+--5. Write a query to get account information of the customers (Name, Phone, Email, AccountNumber, Balance)--
+select C.Name, C.Phone, C.Email, A.AccountNumber, A.Balance from Customer C
+inner join CustomerAccount A on C.CustomerId = A.CustomerId;
+
+--6.--
+alter table CustomerTransaction
+add check (amount <=100000 and amount>0);
+
+--7.Create a view named vCustomerTransactions that display Name, AccountNumber, TransactionDate, Amount, and DepositorWithdraw from Customer, CustomerAccount and CustomerTransaction tables--
+CREATE VIEW vCustomerTransactions AS
+Select C.Name, A.AccountNumber, T.TransactionDate, T.Amount, T.DepositorWithdraw
+From Customer C
+INNER JOIN CustomerAccount A 
+On C.CustomerId = A.CustomerId
+INNER JOIN CustomerTransaction T 
+On A.AccountNumber = T.AccountNumber;
+
